@@ -1,2 +1,5 @@
-def test_sample_pass():
-    assert 1 + 1 == 2
+from guardian.utils import add
+
+
+def test_add():
+    assert add(2, 3) == 5
