@@ -1,2 +1,2 @@
-def test_example():
+def test_sample_pass():
     assert 1 + 1 == 2
