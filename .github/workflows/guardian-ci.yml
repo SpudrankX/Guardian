@@ -1,10 +1,6 @@
 name: Guardian CI
 
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+on: [push, pull_request]
 
 jobs:
   build:
@@ -12,26 +8,22 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Set up Python
-        uses: actions/setup-python@v5
+        uses: actions/setup-python@v4
         with:
-          python-version: '3.11'
+          python-version: "3.12"
 
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
-          pip install pytest black flake8 isort
+          pip install -r requirements-dev.txt
 
-      - name: Check formatting with black
-        run: black --check .
-
-      - name: Check imports with isort
-        run: isort . --check-only
-
-      - name: Lint with flake8
-        run: flake8 .
+      - name: Run linters
+        run: |
+          pre-commit run --all-files
 
       - name: Run tests
-        run: pytest -v
+        run: |
+          pytest -v
