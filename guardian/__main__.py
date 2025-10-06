@@ -1,50 +1,27 @@
-import subprocess
-import platform
 import sys
-import os
-
-def get_git_info():
-    """Retrieve branch name and last commit message."""
-    try:
-        branch = subprocess.check_output(
-            ["git", "rev-parse", "--abbrev-ref", "HEAD"], stderr=subprocess.DEVNULL
-        ).decode().strip()
-        commit_msg = subprocess.check_output(
-            ["git", "log", "-1", "--pretty=%s"], stderr=subprocess.DEVNULL
-        ).decode().strip()
-        return branch, commit_msg
-    except Exception:
-        return "unknown", "unavailable"
-
-def system_info():
-    """Return Python and system information."""
-    return {
-        "python": platform.python_version(),
-        "system": platform.system(),
-        "release": platform.release(),
-        "machine": platform.machine(),
-        "env": os.getenv("PREFIX", "Termux/Linux")
-    }
+from guardian.update import auto_update, check_version
+from guardian.env import detect_environment
+from guardian.monitor import log_event
+from guardian.net import check_internet
 
 def main():
-    branch, commit = get_git_info()
-    info = system_info()
-
-    print("Guardian Framework v3.6 — Build Stable")
-    print("---------------------------------------")
-    print(f"Branch: {branch}")
-    print(f"Last Commit: {commit}")
-    print(f"Python: {info['python']}")
-    print(f"System: {info['system']} {info['release']} ({info['machine']})")
-    print(f"Environment: {info['env']}")
-    print("Status: ✅ All systems operational\n")
-
-    if "--version" in sys.argv:
-        print("Guardian CLI Version: v3.6 — Diagnostic Build")
-    elif "--sync" in sys.argv:
-        os.system("git sync")
+    args = sys.argv[1:]
+    if "--version" in args:
+        check_version()
+    elif "--update" in args:
+        auto_update()
+    elif "--status" in args:
+        env = detect_environment()
+        print("🌐 Guardian v3.7 System Status")
+        print("OS:", env["os"])
+        print("Architecture:", env["arch"])
+        print("Termux:", env["termux"])
+        print("Internet:", "Online" if check_internet() else "Offline")
     else:
-        print("Ready for next instruction...")
+        print("Guardian Framework v3.7 — Aegis Protocol Initialized.")
+        print("Use --status | --update | --version")
+
+    log_event(f"Command executed: {' '.join(args) if args else 'default'}")
 
 if __name__ == "__main__":
     main()

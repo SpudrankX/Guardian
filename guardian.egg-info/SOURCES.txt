@@ -2,6 +2,7 @@ README.md
 pyproject.toml
 setup.py
 guardian/__init__.py
+guardian/__main__.py
 guardian/core.py
 guardian/utils.py
 guardian.egg-info/PKG-INFO
